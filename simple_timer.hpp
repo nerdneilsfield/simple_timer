@@ -47,7 +47,7 @@ public:
   void stop() {
     end_ = std::chrono::high_resolution_clock::now();
     auto duration =
-        std::chrono::duration_cast<std::chrono::microseconds>(end_ - start_);
+        std::chrono::duration_cast<std::chrono::milliseconds>(end_ - start_);
     total_ += duration.count();
   }
 
@@ -58,7 +58,7 @@ public:
     total_ = 0;
   }
 
-  /** @brief Returns the elapsed time in microseconds. */
+  /** @brief Returns the elapsed time in milliseconds. */
   double elapsed_time_ms() const { return total_; }
 
   /** @brief Returns the elapsed time in seconds. */
