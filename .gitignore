@@ -30,3 +30,9 @@
 *.exe
 *.out
 *.app
+
+build/*
+clangd_cache/*
+clangd-cache/*
+.vscode/*
+ccls-cache/*
