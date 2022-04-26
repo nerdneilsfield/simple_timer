@@ -33,7 +33,10 @@
  */
 class StopWatchTimer {
 public:
-  StopWatchTimer(const std::string &name = "deault") : name_(name), total_(0.0) { reset(); }
+  StopWatchTimer(const std::string &name = "deault")
+      : name_(name), total_(0.0) {
+    reset();
+  }
 
   void set_name(const std::string &name) { name_ = name; }
 
@@ -76,7 +79,7 @@ private:
 
 class SimpleTimerInterface {
 public:
-  virtual ~SimpleTimerInterface() {}
+  virtual ~SimpleTimerInterface() = default;
 
   virtual void start(int index) = 0;
   virtual void stop(int index) = 0;
@@ -90,17 +93,20 @@ public:
 
 class SimpleTimerArrayInterface : public SimpleTimerInterface {
 public:
-  SimpleTimerArrayInterface(int size) : size_(size) { timers_.resize(size); }
-
-  SimpleTimerArrayInterface(const std::vector<std::string> &name, int size)
-      : size_(size) {
-    timers_.resize(size);
-    for (int i = 0; i < size; ++i) {
-      timers_[i].set_name(name[i]);
+  SimpleTimerArrayInterface(int size) : size_(size) {
+    for (int i = 0; i < size_; ++i) {
+      timers_.push_back(new StopWatchTimer());
     }
   }
 
-  void check_id(int id){
+  SimpleTimerArrayInterface(const std::vector<std::string> &name, int size)
+      : size_(size) {
+    for (int i = 0; i < size_; ++i) {
+      timers_.push_back(new StopWatchTimer(name[i]));
+    }
+  }
+
+  void check_id(int id) {
     if (id < 0 || id >= size_) {
       throw std::runtime_error("Invalid id");
     }
@@ -108,56 +114,57 @@ public:
 
   void start(int id) override {
     check_id(id);
-    timers_[id].start();
+    timers_[id]->start();
   }
 
   void stop(int id) override {
     this->check_id(id);
-    timers_[id].stop();
+    timers_[id]->stop();
   }
 
-  void reset(int id) override{
+  void reset(int id) override {
     this->check_id(id);
-    timers_[id].reset();
+    timers_[id]->reset();
   }
 
   double elapsed_time_ms(int id) override {
     check_id(id);
-    return timers_[id].elapsed_time_ms();
+    return timers_[id]->elapsed_time_ms();
   }
 
   double elapsed_time(int id) override {
     check_id(id);
-    return timers_[id].elapsed_time();
+    return timers_[id]->elapsed_time();
   }
 
-  void print_stats(int id) override{
+  void print_stats(int id) override {
     check_id(id);
-    timers_[id].print_stats();
+    timers_[id]->print_stats();
   }
 
   void print_all_stats() override {
     for (int i = 0; i < size_; ++i) {
-      timers_[i].print_stats();
+      timers_[i]->print_stats();
     }
   }
 
 private:
   int size_;
-  std::vector<StopWatchTimer> timers_;
+  std::vector<StopWatchTimer *> timers_;
 };
 
-inline bool
-createTimer(SimpleTimerInterface **timer_interface, int size) {
-        *timer_interface = reinterpret_cast<SimpleTimerInterface *>(new SimpleTimerArrayInterface(size));
-        return (*timer_interface != nullptr)? true : false;
+inline bool createTimer(SimpleTimerInterface **timer_interface, int size) {
+  *timer_interface = reinterpret_cast<SimpleTimerInterface *>(
+      new SimpleTimerArrayInterface(size));
+  return (*timer_interface != nullptr) ? true : false;
 }
 
 inline bool createTimerWithName(SimpleTimerInterface **timer_interface,
                                 const std::vector<std::string> &name,
                                 int size) {
-        *timer_interface = reinterpret_cast<SimpleTimerInterface *>(new SimpleTimerArrayInterface(name, size));
-        return (*timer_interface != nullptr)? true : false;
+  *timer_interface = reinterpret_cast<SimpleTimerInterface *>(
+      new SimpleTimerArrayInterface(name, size));
+  return (*timer_interface != nullptr) ? true : false;
 }
 
 inline bool deleteTimer(SimpleTimerInterface **timer_interface) {
