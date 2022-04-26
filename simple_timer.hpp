@@ -62,7 +62,7 @@ public:
   double elapsed_time_ms() const { return total_; }
 
   /** @brief Returns the elapsed time in seconds. */
-  double elapsed_time() const { return elapsed_time() * 1000.0; }
+  double elapsed_time() const { return total_ * 1000.0; }
 
   /** @brief Print the elapsed time in output */
   void print_stats() const {

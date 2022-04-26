@@ -78,5 +78,13 @@ int main(int argc, char **argv) {
 
   displayAllTimer(&timer_instance);
 
+  double time1_elapsed = getTimerElapsed(&timer_instance, 0);
+  double time2_elapsed = getTimerElapsed(&timer_instance, 1);
+  double time3_elapsed = getTimerElapsed(&timer_instance, 2);
+
+  double time1_elapsed_ms = getTimerElapsed(&timer_instance, 0);
+  double time2_elapsed_ms = getTimerElapsed(&timer_instance, 1);
+  double time3_elapsed_ms = getTimerElapsed(&timer_instance, 2);
+
   deleteTimer(&timer_instance);
 }
